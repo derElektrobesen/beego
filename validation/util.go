@@ -118,6 +118,10 @@ func isStructPtr(t reflect.Type) bool {
 	return t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct
 }
 
+func isSlice(t reflect.Type) bool {
+	return t.Kind() == reflect.Slice
+}
+
 func getValidFuncs(f reflect.StructField) (vfs []ValidFunc, err error) {
 	tag := f.Tag.Get(ValidTag)
 	if len(tag) == 0 {

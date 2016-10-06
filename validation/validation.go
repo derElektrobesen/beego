@@ -366,11 +366,20 @@ func (v *Validation) RecursiveValid(objc interface{}) (bool, error) {
 		t := objT.Field(i).Type
 
 		// Recursive applies to struct or pointer to structs fields
-		if isStruct(t) || isStructPtr(t) {
+		if isStruct(t) || isStructPtr(t) || isSlice(t) {
 			// Step 3: do the recursive validation
 			// Only valid the Public field recursively
 			if objV.Field(i).CanInterface() {
-				pass, err = v.RecursiveValid(objV.Field(i).Interface())
+				if isSlice(t) {
+					for i := 0; i < t.Len(); i++ {
+						pass, err = v.RecursiveValid(objV.Index(i).Interface())
+						if err != nil || !pass {
+							break
+						}
+					}
+				} else {
+					pass, err = v.RecursiveValid(objV.Field(i).Interface())
+				}
 			}
 		}
 	}
